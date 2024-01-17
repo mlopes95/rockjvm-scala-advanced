@@ -35,7 +35,7 @@ abstract class MyStream[+A] {
    */
   @tailrec
   final def toList[B >: A](acc: List[B] = Nil): List[B] =
-    if (isEmpty) acc
+    if (isEmpty) acc.reverse
     else tail.toList(head :: acc)
 }
 
@@ -73,7 +73,7 @@ class NonEmptyStream[+A](h: A, t1: => MyStream[A]) extends MyStream[A] {
    */
   def #::[B >: A](element: B): MyStream[B] = new NonEmptyStream[B](element, this)
 
-  def ++[B >: A](anotherStream: => MyStream[B]): MyStream[B] = new NonEmptyStream[B](head, tail ++  anotherStream)
+  def ++[B >: A](anotherStream: => MyStream[B]): MyStream[B] = new NonEmptyStream[B](head, tail ++ anotherStream)
 
   def foreach(f: A => Unit): Unit = {
     f(head)
@@ -83,7 +83,7 @@ class NonEmptyStream[+A](h: A, t1: => MyStream[A]) extends MyStream[A] {
   /**
    * s = new NonEmptyStream(1, ?)
    * mapped = s.map(_ + 1) = new NonEmptyStream(2, s.tail.map(_ + 1))
-   *  .... mapped.tail
+   * .... mapped.tail
    */
   def map[B](f: A => B): MyStream[B] = new NonEmptyStream[B](f(head), tail map f)
 
@@ -94,14 +94,16 @@ class NonEmptyStream[+A](h: A, t1: => MyStream[A]) extends MyStream[A] {
     else tail.filter(predicate) // preserves lazy eval
 
   def take(n: Int): MyStream[A] =
-    if(n <= 0) EmptyStream
+    if (n <= 0) EmptyStream
     else if (n == 1) new NonEmptyStream(head, EmptyStream)
-    else new NonEmptyStream(head, tail.take(n-1))
+    else new NonEmptyStream(head, tail.take(n - 1))
 }
+
 object MyStream {
   def from[A](start: A)(generator: A => A): MyStream[A] =
     new NonEmptyStream(start, MyStream.from(generator(start))(generator))
 }
+
 object StreamsPlayground extends App {
   val naturals = MyStream.from(1)(_ + 1)
   println(naturals.head)
@@ -115,12 +117,31 @@ object StreamsPlayground extends App {
 
   // map, flatMap
   println(startFrom0.map(_ * 2).take(100).toList())
-  println(startFrom0.flatMap(x => new NonEmptyStream(x, new NonEmptyStream(x +1, EmptyStream))).take(10).toList())
+  println(startFrom0.flatMap(x => new NonEmptyStream(x, new NonEmptyStream(x + 1, EmptyStream))).take(10).toList())
   println(startFrom0.filter(_ < 10).take(10).toList())
 
   /**
    * Exercises:
    * 1. Stream of fibonacci numbers
    * 2. Implement the stream of prime numbers with Eratosthenes' sieve
+   * [ 2 3 4 ...]
+   * filter out all numbers divisible by 2
+   * [ 2 3 5 7 9 11 ... ]
+   * filter out all numbers divisible by 3
+   * [ 2 3 5 7 11 13 17 ... ]
+   * filter out all numbers divisible by 5
    */
+
+  def fibonacci(first: BigInt, second: BigInt): MyStream[BigInt] = {
+    new NonEmptyStream[BigInt](first, fibonacci(second, first + second))
+  }
+  println(fibonacci(1, 1).take(100).toList())
+
+  // eratosthenes sieve
+  def erastosthenes(numbers: MyStream[Int]): MyStream[Int] =
+    if (numbers.isEmpty) numbers
+    else new NonEmptyStream[Int](numbers.head, erastosthenes(numbers.tail.filter(n => n % numbers.head != 0)))
+
+  println(erastosthenes(MyStream.from(2)(_ + 1)).take(100).toList())
 }
+
