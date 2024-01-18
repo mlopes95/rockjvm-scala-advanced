@@ -86,9 +86,9 @@ object PartialFunctions extends App {
   }
 
   val chatbot: PartialFunction[String, String] = {
-    case "hello"          => s"Hello! How can I help you?"
+    case "hello" => s"Hello! How can I help you?"
     case "tell me a joke" => s"I do not have the facilities for that big man!"
-    case "goodbye"        => s"Bye, have a great day!"
+    case "goodbye" => s"Bye, have a great day!"
   }
 
   stdin.getLines().map(chatbot).foreach(println)

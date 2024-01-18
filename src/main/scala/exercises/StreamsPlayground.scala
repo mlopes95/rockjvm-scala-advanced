@@ -127,17 +127,11 @@ object StreamsPlayground extends App {
 
   println(startFrom0.filter(_ < 10).take(10).toList())
 
-  /**
-   * Exercises:
-   * 1. Stream of fibonacci numbers
-   * 2. Implement the stream of prime numbers with Eratosthenes' sieve
-   * [ 2 3 4 ...]
-   * filter out all numbers divisible by 2
-   * [ 2 3 5 7 9 11 ... ]
-   * filter out all numbers divisible by 3
-   * [ 2 3 5 7 11 13 17 ... ]
-   * filter out all numbers divisible by 5
-   */
+  /** Exercises:
+    *   1. Stream of fibonacci numbers 2. Implement the stream of prime numbers with Eratosthenes'
+    *      sieve [ 2 3 4 ...] filter out all numbers divisible by 2 [ 2 3 5 7 9 11 ... ] filter out
+    *      all numbers divisible by 3 [ 2 3 5 7 11 13 17 ... ] filter out all numbers divisible by 5
+    */
 
   def fibonacci(first: BigInt, second: BigInt): MyStream[BigInt] = {
     new NonEmptyStream[BigInt](first, fibonacci(second, first + second))

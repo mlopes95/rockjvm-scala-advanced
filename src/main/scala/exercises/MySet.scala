@@ -104,13 +104,9 @@ class NonEmptySet[A](head: A, tail: MySet[A]) extends MySet[A] {
   // new operator
   def unary_! : MySet[A] = new PropertyBasedSet[A](x => !this.contains(x))
 
-  /**
-   * [1 2 3] ++ [4 5] =
-   * [2 3] ++ [4 5] + 1
-   * [3] ++ [4 5] + 1 + 2
-   * [] ++ [4 5] + 1 + 2 + 3
-   * [4 5] + 1 + 2 + 3 = [4 5 1 2 3]
-   */
+  /** [1 2 3] ++ [4 5] = [2 3] ++ [4 5] + 1 [3] ++ [4 5] + 1 + 2 [] ++ [4 5] + 1 + 2 + 3 [4 5] + 1 +
+    * 2 + 3 = [4 5 1 2 3]
+    */
   def ++(anotherSet: MySet[A]): MySet[A] =
     tail ++ anotherSet + head
 
@@ -131,13 +127,10 @@ class NonEmptySet[A](head: A, tail: MySet[A]) extends MySet[A] {
 }
 
 object MySet {
-  /**
-   * val s = MySet(1,2,3) = buildSet(seq(1,2,3), [])
-   * = buildSet(seq(2,3), [] + 1)
-   * = buildSet(seq(3), [1] + 2)
-   * = buildSet(seq(), [1,2] + 3)
-   * = [1,2,3]
-   */
+
+  /** val s = MySet(1,2,3) = buildSet(seq(1,2,3), []) \= buildSet(seq(2,3), [] + 1) \=
+    * buildSet(seq(3), [1] + 2) \= buildSet(seq(), [1,2] + 3) \= [1,2,3]
+    */
   def apply[A](values: A*): MySet[A] = {
     @tailrec
     def buildSet(valSeq: Seq[A], acc: MySet[A]): MySet[A] =
