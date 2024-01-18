@@ -2,8 +2,8 @@ package exercises
 
 import scala.annotation.tailrec
 
-
 abstract class MyStream[+A] {
+
   def isEmpty: Boolean
 
   def head: A
@@ -26,20 +26,17 @@ abstract class MyStream[+A] {
 
   def takeAsList(n: Int): List[A] = take(n).toList()
 
-  /**
-   * [1 2 3].toList([]) =
-   * [2 3].toList([1])
-   * [3].toList([2 1])
-   * [].toList([3 2 1])
-   * = [1 2 3]
-   */
+  /** [1 2 3].toList([]) = [2 3].toList([1]) [3].toList([2 1]) [].toList([3 2 1]) \= [1 2 3]
+    */
   @tailrec
   final def toList[B >: A](acc: List[B] = Nil): List[B] =
     if (isEmpty) acc.reverse
     else tail.toList(head :: acc)
+
 }
 
 case object EmptyStream extends MyStream[Nothing] {
+
   def isEmpty: Boolean = true
 
   def head: Nothing = throw new NoSuchElementException()
@@ -59,33 +56,32 @@ case object EmptyStream extends MyStream[Nothing] {
   def filter(predicate: Nothing => Boolean): MyStream[Nothing] = this
 
   def take(n: Int): MyStream[Nothing] = this
+
 }
 
 class NonEmptyStream[+A](h: A, t1: => MyStream[A]) extends MyStream[A] {
+
   def isEmpty: Boolean = false
 
   override val head: A = h
   override lazy val tail: MyStream[A] = t1 // call by need
 
-  /**
-   * val s = new NonEmptyStream(1, EmptyStream)
-   * val prepend = 1 #:: s = new Cons(1, s)
-   */
+  /** val s = new NonEmptyStream(1, EmptyStream) val prepend = 1 #:: s = new Cons(1, s)
+    */
   def #::[B >: A](element: B): MyStream[B] = new NonEmptyStream[B](element, this)
 
-  def ++[B >: A](anotherStream: => MyStream[B]): MyStream[B] = new NonEmptyStream[B](head, tail ++ anotherStream)
+  def ++[B >: A](anotherStream: => MyStream[B]): MyStream[B] =
+    new NonEmptyStream[B](head, tail ++ anotherStream)
 
   def foreach(f: A => Unit): Unit = {
     f(head)
     tail.foreach(f)
   }
 
-  /**
-   * s = new NonEmptyStream(1, ?)
-   * mapped = s.map(_ + 1) = new NonEmptyStream(2, s.tail.map(_ + 1))
-   * .... mapped.tail
-   */
-  def map[B](f: A => B): MyStream[B] = new NonEmptyStream[B](f(head), tail map f)
+  /** s = new NonEmptyStream(1, ?) mapped = s.map(_ + 1) = new NonEmptyStream(2, s.tail.map(_ + 1))
+    * .... mapped.tail
+    */
+  def map[B](f: A => B): MyStream[B] = new NonEmptyStream[B](f(head), tail.map(f))
 
   def flatMap[B](f: A => MyStream[B]): MyStream[B] = f(head) ++ tail.flatMap(f)
 
@@ -97,14 +93,18 @@ class NonEmptyStream[+A](h: A, t1: => MyStream[A]) extends MyStream[A] {
     if (n <= 0) EmptyStream
     else if (n == 1) new NonEmptyStream(head, EmptyStream)
     else new NonEmptyStream(head, tail.take(n - 1))
+
 }
 
 object MyStream {
+
   def from[A](start: A)(generator: A => A): MyStream[A] =
     new NonEmptyStream(start, MyStream.from(generator(start))(generator))
+
 }
 
 object StreamsPlayground extends App {
+
   val naturals = MyStream.from(1)(_ + 1)
   println(naturals.head)
   println(naturals.tail.head)
@@ -117,7 +117,14 @@ object StreamsPlayground extends App {
 
   // map, flatMap
   println(startFrom0.map(_ * 2).take(100).toList())
-  println(startFrom0.flatMap(x => new NonEmptyStream(x, new NonEmptyStream(x + 1, EmptyStream))).take(10).toList())
+
+  println(
+    startFrom0
+      .flatMap(x => new NonEmptyStream(x, new NonEmptyStream(x + 1, EmptyStream)))
+      .take(10)
+      .toList()
+  )
+
   println(startFrom0.filter(_ < 10).take(10).toList())
 
   /**
@@ -135,13 +142,18 @@ object StreamsPlayground extends App {
   def fibonacci(first: BigInt, second: BigInt): MyStream[BigInt] = {
     new NonEmptyStream[BigInt](first, fibonacci(second, first + second))
   }
+
   println(fibonacci(1, 1).take(100).toList())
 
   // eratosthenes sieve
   def erastosthenes(numbers: MyStream[Int]): MyStream[Int] =
     if (numbers.isEmpty) numbers
-    else new NonEmptyStream[Int](numbers.head, erastosthenes(numbers.tail.filter(n => n % numbers.head != 0)))
+    else
+      new NonEmptyStream[Int](
+        numbers.head,
+        erastosthenes(numbers.tail.filter(n => n % numbers.head != 0))
+      )
 
   println(erastosthenes(MyStream.from(2)(_ + 1)).take(100).toList())
-}
 
+}

@@ -13,6 +13,7 @@ object Recap extends App {
     if (aCondition) 54
     56
   }
+
   // Unit = Void
   val theUnit: Unit = println("Hello Scala")
 
@@ -41,16 +42,17 @@ object Recap extends App {
   // method notations
   val aCroc = new Crocodile
   aCroc.eat(aDog)
-  aCroc eat aDog // natural notation
+  aCroc.eat(aDog) // natural notation
 
   // anonymous classes
-  val aCarnivore = new Carnivore:
+  val aCarnivore = new Carnivore {
     override def eat(a: Animal): Unit = println("roar!")
+  }
 
   // generics
   abstract class MyList[+A] // variance and variance problems in THIS course
 
-  //singletons and companions
+  // singletons and companions
   object MyList
 
   // case classes
@@ -59,13 +61,14 @@ object Recap extends App {
   // exception and try/catch/finally
   val throwsException = throw new RuntimeException // Nothing
 
-  val aPotentialFailure = try {
-    throw new RuntimeException
-  } catch {
-    case e: Exception => "I caught an exception"
-  } finally {
-    println("some logs")
-  }
+  val aPotentialFailure =
+    try {
+      throw new RuntimeException
+    } catch {
+      case e: Exception => "I caught an exception"
+    } finally {
+      println("some logs")
+    }
 
   // packaging and imports
 
@@ -77,12 +80,12 @@ object Recap extends App {
   incrementer(1)
 
   val anonymousIncrementer = (x: Int) => x + 1
-  List(1,2,3).map(anonymousIncrementer) // HOF
+  List(1, 2, 3).map(anonymousIncrementer) // HOF
   // map, flatMap, filter
 
   // for-comprehension
   val pairs = for {
-    num <- List(1,2,3)
+    num <- List(1, 2, 3)
     char <- List('a', 'b', 'c')
   } yield num + "-" + char
 
@@ -97,6 +100,7 @@ object Recap extends App {
 
   // pattern matching
   val x = 2
+
   val order = x match {
     case 1 => "first"
     case 2 => "second"
@@ -105,6 +109,7 @@ object Recap extends App {
   }
 
   val bob = Person("Bob", 22)
+
   val greeting = bob match {
     case Person(n, _) => s"Hi, my name is $n"
   }

@@ -9,6 +9,7 @@ object LazyEvaluation extends App {
     println("hello")
     42
   }
+
   println(x)
   println(x)
 
@@ -22,7 +23,7 @@ object LazyEvaluation extends App {
   def simpleCondition: Boolean = false
 
   lazy val lazyCondition = sideEffectCondition
-  println(if(simpleCondition && lazyCondition) "yes" else "no")
+  println(if (simpleCondition && lazyCondition) "yes" else "no")
 
   // in conjuction with call by name
   def byNameMethod(n: => Int): Int = {
@@ -30,6 +31,7 @@ object LazyEvaluation extends App {
     lazy val t = n
     t + t + t + 1
   }
+
   def retrieveMagicValue = {
     println("waiting")
     Thread.sleep(1000)
@@ -62,20 +64,20 @@ object LazyEvaluation extends App {
 
   // for-comprehensions use withFilter with guards
   for {
-    a <- List(1,2,3) if a % 2 == 0 // use lazy vals!
+    a <- List(1, 2, 3) if a % 2 == 0 // use lazy vals!
   } yield a + 1
 
-  List(1,2,3).withFilter(_ % 2 == 0).map(_ + 1) // List[Int]
+  List(1, 2, 3).withFilter(_ % 2 == 0).map(_ + 1) // List[Int]
 
-  /**
-   * Exercise: implement a lazily evaluated, singly linked STREAM of elements
-   *
-   * naturals = MyStream.from(1)(x => x + 1) = stream of natural numbers (potentially infinite!)
-   * naturals.take(100).foreach(println) // lazily evaluated stream of the first 100 naturals (finite stream)
-   * naturals.foreach(println) // will crash - infinite
-   * naturals.map(_ * 2) // stream of all even numbers (potentially infinite)
-   */
+  /** Exercise: implement a lazily evaluated, singly linked STREAM of elements
+    *
+    * naturals = MyStream.from(1)(x => x + 1) = stream of natural numbers (potentially infinite!)
+    * naturals.take(100).foreach(println) // lazily evaluated stream of the first 100 naturals
+    * (finite stream) naturals.foreach(println) // will crash - infinite naturals.map(_ * 2) //
+    * stream of all even numbers (potentially infinite)
+    */
   abstract class MyStream[+A] {
+
     def isEmpty: Boolean
     def head: A
     def tail: MyStream[A]
@@ -90,10 +92,11 @@ object LazyEvaluation extends App {
 
     def take(n: Int): MyStream[A] // takes the first n elements out of this stream
     def takeAsList(n: Int): List[A]
+
   }
 
   object MyStream {
     def from[A](start: A)(generator: A => A): MyStream[A] = ???
   }
-}
 
+}
