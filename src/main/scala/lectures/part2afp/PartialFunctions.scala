@@ -1,7 +1,5 @@
 package lectures.part2afp
 
-import jdk.nashorn.internal.ir.FunctionNode
-
 import scala.io.Source.stdin
 
 object PartialFunctions extends App {
