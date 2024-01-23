@@ -27,8 +27,8 @@ object CurriesPAF extends App {
   def curriedAddMethod(x: Int)(y: Int) = x + y
 
   // add7: Int => Int = y => 7 + y
-  // as many differen implementations of add7 using the above
-  // be crative!!
+  // as many different implementations of add7 using the above
+  // be creative!!
 
   val add7: Int => Int = superAdder(7)
   val add7Curried = curriedAddMethod(7)
