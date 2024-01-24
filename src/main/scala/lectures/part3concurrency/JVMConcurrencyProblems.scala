@@ -19,7 +19,11 @@ object JVMConcurrencyProblems {
 
   case class BankAccount(var amount: Int)
 
-  def buy(bankAccount: BankAccount, thing: String, price: Int): Unit = {
+  def buy(
+      bankAccount: BankAccount,
+      thing: String,
+      price: Int
+    ): Unit = {
 
     /*
       involves 3 steps:
@@ -30,7 +34,11 @@ object JVMConcurrencyProblems {
     bankAccount.amount -= price
   }
 
-  def buySafe(bankAccount: BankAccount, thing: String, price: Int): Unit = {
+  def buySafe(
+      bankAccount: BankAccount,
+      thing: String,
+      price: Int
+    ): Unit = {
     bankAccount.synchronized { // does not allow multiple threads to run the critical section AT THE SAME TIME
       bankAccount.amount -= price // critical section
     }
@@ -62,26 +70,19 @@ object JVMConcurrencyProblems {
     }
   }
 
-  /**
-   * Exercises:
-   *
-   * 1 - create "inception threads"
-   * thread 1
-   *  -> thread 2
-   *    -> thread 3
-   *      ....
-   * each thread prints "hello from thread $i"
-   * Print all messages IN REVERSE ORDER
-   *
-   * 2 - what's the max/min value of x
-   * 3 - "sleep fallacy"
-   */
+  /** Exercises:
+    *
+    * 1 - create "inception threads" thread 1 -> thread 2 -> thread 3 .... each thread prints "hello
+    * from thread $i" Print all messages IN REVERSE ORDER
+    *
+    * 2 - what's the max/min value of x 3 - "sleep fallacy"
+    */
 
   // 1. Inception threads
 
   def inceptionThreads(maxThreads: Int, i: Int = 1): Thread = {
     new Thread(() => {
-      if(i < maxThreads) {
+      if (i < maxThreads) {
         val newThread = inceptionThreads(maxThreads, i + 1)
         newThread.start()
         newThread.join()
@@ -140,4 +141,5 @@ object JVMConcurrencyProblems {
   def main(args: Array[String]): Unit = {
     demoSleepFallacy()
   }
+
 }

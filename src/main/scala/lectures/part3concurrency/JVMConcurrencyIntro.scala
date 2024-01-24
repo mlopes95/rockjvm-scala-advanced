@@ -13,6 +13,7 @@ object JVMConcurrencyIntro extends App {
   val runnable = new Runnable {
     override def run(): Unit = println("Running in parallel")
   }
+
   val aThread = new Thread(runnable)
 
   aThread.start() // gives the signal to the JVM to start a JVM thread
@@ -45,7 +46,7 @@ object JVMConcurrencyIntro extends App {
   })
 
   pool.shutdown()
-  //pool.execute(() => println("Should not appear"))
+  // pool.execute(() => println("Should not appear"))
 
   // pool.shutdownNow()
   println(pool.isShutdown) // true

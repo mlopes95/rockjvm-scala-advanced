@@ -11,28 +11,27 @@ object MagnetPattern extends App {
   class P2PRequest
   class P2PResponse
   class Serializer[T]
+
   trait Actor {
+
     def receive(statusCode: Int): Int
     def receive(request: P2PRequest): Int
-    def receive(request:P2PResponse): Int
-    def receive[T : Serializer](message: T): Int
-    def receive[T : Serializer](message: T, statusCode: Int): Int
+    def receive(request: P2PResponse): Int
+    def receive[T: Serializer](message: T): Int
+    def receive[T: Serializer](message: T, statusCode: Int): Int
     def receive(future: Future[P2PRequest]): Int
     // def receive(future: Future[P2PResponse]): Int
     // lots of overloads
   }
 
-  /**
-   * 1 - type erasure
-   * 2 - lifting doesn't work for all overloads
-   *
-   *    val receiveFV = receive _ // ?!
-   *
-   * 3 - code duplication
-   * 4 - type inference and default args
-   *
-   *    actor.receive(?!)
-   */
+  /** 1 - type erasure 2 - lifting doesn't work for all overloads
+    *
+    * val receiveFV = receive _ // ?!
+    *
+    * 3 - code duplication 4 - type inference and default args
+    *
+    * actor.receive(?!)
+    */
 
   trait MessageMagnet[Result] {
     def apply(): Result
@@ -41,28 +40,32 @@ object MagnetPattern extends App {
   def receive[R](magnet: MessageMagnet[R]): R = magnet()
 
   implicit class FromP2PRequest(request: P2PRequest) extends MessageMagnet[Int] {
+
     override def apply(): Int = {
       // logic for handling a P2PRequest
       println("Handling P2P request")
       42
     }
+
   }
 
   implicit class FromP2PResponse(request: P2PResponse) extends MessageMagnet[Int] {
+
     override def apply(): Int = {
       // logic for handling a P2PResponse
       println("Handling P2P response")
       24
     }
+
   }
 
-    receive(new P2PRequest)
-    receive(new P2PResponse)
+  receive(new P2PRequest)
+  receive(new P2PResponse)
 
-    // 1 - no more type erasure problems!
-    implicit class FromResponseFuture(future: Future[P2PResponse]) extends MessageMagnet[Int] {
-      override def apply(): Int = 2
-    }
+  // 1 - no more type erasure problems!
+  implicit class FromResponseFuture(future: Future[P2PResponse]) extends MessageMagnet[Int] {
+    override def apply(): Int = 2
+  }
 
   implicit class FromRequestFuture(future: Future[P2PRequest]) extends MessageMagnet[Int] {
     override def apply(): Int = 3
@@ -73,6 +76,7 @@ object MagnetPattern extends App {
 
   // 2 - lifting works
   trait MathLib {
+
     def add1(x: Int) = x + 1
     def add1(s: String) = s.toInt + 1
     // add1 overloads
@@ -82,6 +86,7 @@ object MagnetPattern extends App {
   trait AddMagnet {
     def apply(): Int
   }
+
   def add1(magnet: AddMagnet): Int = magnet()
 
   implicit class AddInt(x: Int) extends AddMagnet {
@@ -109,32 +114,39 @@ object MagnetPattern extends App {
    */
 
   class Handler {
+
     def handle(s: String) = {
       println(s)
       println(s)
     }
+
   }
 
   trait HandleMagnet {
     def apply(): Unit
   }
+
   def handle(magnet: HandleMagnet) = magnet()
 
   implicit class StringHandle(s: String) extends HandleMagnet {
+
     override def apply(): Unit = {
       println(s)
       println(s)
     }
+
   }
+
   def sideEffectMethod(): String = {
     println("Hello, Scala")
     "ahahah"
   }
+
   // handle(sideEffectMethod())
   handle {
     println("Hello, Scala")
     "magnet"
   }
 
-  //careful
+  // careful
 }

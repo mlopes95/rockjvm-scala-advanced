@@ -6,8 +6,10 @@ object PimpMyLibrary extends App {
 
   // 2.isPrime
   implicit class RichInt(val value: Int) {
+
     def isEven: Boolean = value % 2 == 0
     def sqrt: Double = Math.sqrt(value)
+
     def times(f: () => Unit): Unit = {
       @tailrec
       def timesAux(n: Int): Unit =
@@ -26,6 +28,7 @@ object PimpMyLibrary extends App {
 
       concatenate(value)
     }
+
   }
 
   implicit class RicherInt(richInt: RichInt) {
@@ -58,15 +61,19 @@ object PimpMyLibrary extends App {
    */
 
   implicit class RichString(string: String) {
+
     def asInt: Int = Integer.valueOf(string)
-    def encrypt(cypherDistance: Int): String = string.map(c => (c + cypherDistance).asInstanceOf[Char])
+
+    def encrypt(cypherDistance: Int): String =
+      string.map(c => (c + cypherDistance).asInstanceOf[Char])
+
   }
 
   println("3".asInt + 4)
   println("John".encrypt(2))
 
   3.times(() => println("Scala rocks!"))
-  println(4 * List(1,2))
+  println(4 * List(1, 2))
 
   // "3" / 4
   implicit def stringToInt(string: String): Int = Integer.valueOf(string)
